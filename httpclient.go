@@ -1,4 +1,4 @@
-package main
+package openstack
 
 import (
 	"bytes"
