@@ -36,19 +36,19 @@ var token string
 var endpoints map[string]string
 var security_groups map[string][]string
 
-func main() {
-	token = Get_token()
-	fmt.Printf("Received token : %s\n", token)
-	List_security_groups()
-	Create_security_group("Internal_Cluster", "Group that allows communication within cluster")
-	List_security_groups()
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "tcp")
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "udp")
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "icmp")
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "tcp")
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "udp")
-	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "icmp")
-}
+// func main() {
+// 	token = Get_token()
+// 	fmt.Printf("Received token : %s\n", token)
+// 	List_security_groups()
+// 	Create_security_group("Internal_Cluster", "Group that allows communication within cluster")
+// 	List_security_groups()
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "tcp")
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "udp")
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "icmp")
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "tcp")
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "udp")
+// 	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "icmp")
+// }
 
 func init() {
 	tr = &http.Transport{
