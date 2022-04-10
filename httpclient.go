@@ -40,8 +40,14 @@ func main() {
 	token = Get_token()
 	fmt.Printf("Received token : %s\n", token)
 	List_security_groups()
-	// Create_security_group("Internal_Cluster", "Group that allows communication within cluster")
+	Create_security_group("Internal_Cluster", "Group that allows communication within cluster")
 	List_security_groups()
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "tcp")
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "udp")
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv4", "icmp")
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "tcp")
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "udp")
+	Add_remote_group_security_rule("Internal_Cluster", "NetAct_default", "IPv6", "icmp")
 }
 
 func init() {
@@ -134,7 +140,7 @@ func List_security_groups() {
 	dups := 0
 	for group_name, group_ids := range security_groups {
 		if len(group_ids) > 1 {
-			fmt.Printf("Security group with name %s is found %d times", group_name, len(group_ids))
+			fmt.Printf("Security group with name %s is found %d times\n", group_name, len(group_ids))
 			dups++
 		}
 	}
@@ -173,5 +179,34 @@ func Create_security_group(groupname string, description string) {
 }
 
 func Get_security_group_id(group_name string) string {
-	return "ToDo"
+	return security_groups[group_name][0]
+}
+
+func Add_remote_group_security_rule(group_name string, remote_group_name string, ipversion string, protocol string) {
+	payload := []byte(fmt.Sprintf(`
+	{
+		"security_group_rule": {
+		  "protocol": "%s",
+		  "remote_group_id": "%s",
+		  "ethertype": "%s",
+		  "direction": "ingress",
+		  "security_group_id": "%s"
+		}
+	  }
+	`, protocol, security_groups[remote_group_name][0], ipversion, security_groups[group_name][0]))
+	request, error := http.NewRequest("POST", fmt.Sprintf("%s/v2.0/security-group-rules", endpoints["neutron"]), bytes.NewBuffer(payload))
+	request.Header.Set("X-Auth-Token", token)
+	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	if error != nil {
+		fmt.Println(error)
+	}
+	response, error := client.Do(request)
+	if error != nil {
+		panic(error)
+	}
+	defer response.Body.Close()
+	fmt.Printf("Security group create status is %d\n", response.StatusCode)
+	text, _ := ioutil.ReadAll(response.Body)
+	texts := string(text)
+	fmt.Printf("Response : %s\n", texts)
 }
