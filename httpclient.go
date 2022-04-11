@@ -65,7 +65,7 @@ func Get_API_Endpoints(responsebody []byte) map[string]string {
 		}
 		// fmt.Println("##################################")
 	}
-	fmt.Println(endpoints)
+	// fmt.Println(endpoints)
 	return endpoints
 }
 
@@ -105,8 +105,8 @@ func List_security_groups() {
 		panic(error)
 	}
 	defer response.Body.Close()
-	fmt.Println("List security groups: response Status:", response.Status)
-	fmt.Println("List security groups: response Headers:", response.Header)
+	// fmt.Println("List security groups: response Status:", response.Status)
+	// fmt.Println("List security groups: response Headers:", response.Header)
 	body, _ := ioutil.ReadAll(response.Body)
 	// fmt.Printf("Type of response.Body is %T\n", response.Body)
 	// fmt.Println("List security groups: response Body:", string(body))
