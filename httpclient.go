@@ -41,6 +41,7 @@ func init() {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client = &http.Client{Transport: tr}
+	token = Get_token()
 }
 
 func Get_API_Endpoints(responsebody []byte) map[string]string {
