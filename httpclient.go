@@ -135,8 +135,8 @@ func List_security_groups() {
 		fmt.Printf("Fix security groups with duplicate names to avoid ambiquity, exiting...")
 		os.Exit(1)
 	}
-	fmt.Println("###############################")
-	fmt.Println(security_groups)
+	// fmt.Println("###############################")
+	// fmt.Println(security_groups)
 }
 
 func Create_security_group(groupname string, description string) {
@@ -159,10 +159,10 @@ func Create_security_group(groupname string, description string) {
 		panic(error)
 	}
 	defer response.Body.Close()
-	fmt.Printf("Security group create status is %d\n", response.StatusCode)
-	text, _ := ioutil.ReadAll(response.Body)
-	texts := string(text)
-	fmt.Printf("Response : %s\n", texts)
+	fmt.Printf("Security group %s create status is %d\n", groupname, response.StatusCode)
+	// text, _ := ioutil.ReadAll(response.Body)
+	// texts := string(text)
+	// fmt.Printf("Response : %s\n", texts)
 }
 
 func Get_security_group_id(group_name string) string {
@@ -197,8 +197,8 @@ func Add_remote_group_security_rule(group_name string, remote_group_name string,
 		panic(error)
 	}
 	defer response.Body.Close()
-	fmt.Printf("Security group create status is %d\n", response.StatusCode)
-	text, _ := ioutil.ReadAll(response.Body)
-	texts := string(text)
-	fmt.Printf("Response : %s\n", texts)
+	fmt.Printf("Security group rule src:%s dst:%s ipversion:%s protocol:%s create status is %d\n", group_name, remote_group_name, ipversion, protocol, response.StatusCode)
+	// text, _ := ioutil.ReadAll(response.Body)
+	// texts := string(text)
+	// fmt.Printf("Response : %s\n", texts)
 }
