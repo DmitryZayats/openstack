@@ -170,6 +170,11 @@ func Get_security_group_id(group_name string) string {
 }
 
 func Add_remote_group_security_rule(group_name string, remote_group_name string, ipversion string, protocol string) {
+	// Flush security_groups map
+	for key := range security_groups {
+		delete(security_groups, key)
+	}
+	List_security_groups()
 	payload := []byte(fmt.Sprintf(`
 	{
 		"security_group_rule": {
