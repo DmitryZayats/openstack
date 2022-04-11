@@ -117,8 +117,8 @@ func List_security_groups() {
 	// fmt.Println(dat)
 	// return response.Header["X-Subject-Token"][0]
 	for _, sec_group_item := range dat["security_groups"].([]interface{}) {
-		fmt.Printf("Security group name : %s ID : %s\n", sec_group_item.(map[string]interface{})["name"],
-			sec_group_item.(map[string]interface{})["id"])
+		// fmt.Printf("Security group name : %s ID : %s\n", sec_group_item.(map[string]interface{})["name"],
+		// 	sec_group_item.(map[string]interface{})["id"])
 		sec_group_name := sec_group_item.(map[string]interface{})["name"].(string)
 		sec_group_id := sec_group_item.(map[string]interface{})["id"].(string)
 		security_groups[sec_group_name] = append(security_groups[sec_group_name], sec_group_id)
