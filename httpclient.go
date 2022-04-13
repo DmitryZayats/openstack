@@ -26,9 +26,14 @@ var auth = []byte(fmt.Sprintf(`
           "password": "%s"
         }
       }
-    }
+    },
+	"scope": {
+		"project": {
+		  "id": "%s"
+		}
+	  }
   }
-}`, os.Getenv("OS_USERNAME"), os.Getenv("OS_PROJECT_DOMAIN_ID"), os.Getenv("OS_PASSWORD")))
+}`, os.Getenv("OS_USERNAME"), os.Getenv("OS_PROJECT_DOMAIN_ID"), os.Getenv("OS_PASSWORD"), os.Getenv("OS_PROJECT_ID")))
 
 var tr *http.Transport
 var client *http.Client
@@ -37,8 +42,10 @@ var endpoints map[string]string
 var security_groups map[string][]string
 
 func init() {
+	// proxyUrl, _ := url.Parse("http://localhost:8080")
 	tr = &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		// Proxy:           http.ProxyURL(proxyUrl),
 	}
 	client = &http.Client{Transport: tr}
 	token = Get_token()
