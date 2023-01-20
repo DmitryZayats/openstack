@@ -18,7 +18,7 @@ var auth_url string = fmt.Sprintf("%s/auth/tokens", os.Getenv("OS_AUTH_URL"))
 // fmt.Printf("OS_AUTH_URL is %s\n",os.Getenv("OS_AUTH_URL"))
 
 // var neutron_url string = "https://192.168.122.157:9696"
-var auth = []byte(fmt.Sprintf(`
+var auth_id = []byte(fmt.Sprintf(`
 { "auth": {
     "identity": {
       "methods": ["password"],
@@ -37,6 +37,26 @@ var auth = []byte(fmt.Sprintf(`
 	  }
   }
 }`, os.Getenv("OS_USERNAME"), os.Getenv("OS_PROJECT_DOMAIN_ID"), os.Getenv("OS_PASSWORD"), os.Getenv("OS_PROJECT_ID")))
+
+var auth_name = []byte(fmt.Sprintf(`
+{ "auth": {
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": "%s",
+          "domain": { "name": "%s" },
+          "password": "%s"
+        }
+      }
+    },
+	"scope": {
+		"project": {
+		  "id": "%s"
+		}
+	  }
+  }
+}`, os.Getenv("OS_USERNAME"), os.Getenv("OS_USER_DOMAIN_NAME"), os.Getenv("OS_PASSWORD"), os.Getenv("OS_PROJECT_ID")))
 
 var tr *http.Transport
 var client *http.Client
@@ -80,27 +100,59 @@ func Get_API_Endpoints(responsebody []byte) map[string]string {
 }
 
 func Get_token() string {
-	request, error := http.NewRequest("POST", auth_url, bytes.NewBuffer(auth))
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	if error != nil {
-		fmt.Println(error)
+	var err error
+	for _, auth := range []([]byte){auth_id, auth_name} {
+
+		request, error := http.NewRequest("POST", auth_url, bytes.NewBuffer(auth))
+		request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+		if error != nil {
+			fmt.Println(error)
+		}
+
+		response, error := client.Do(request)
+		err = error
+		if err != nil {
+			// If first attempt at auth with domain id failed, try with the domain name
+			// panic(error)
+			continue
+		}
+
+		defer response.Body.Close()
+		responseBody, _ := io.ReadAll(response.Body)
+		Get_API_Endpoints(responseBody)
+		token = response.Header["X-Subject-Token"][0]
+		return response.Header["X-Subject-Token"][0]
 	}
-	response, error := client.Do(request)
-	if error != nil {
-		panic(error)
-	}
-	defer response.Body.Close()
+
+	//At this point we should have authenticated. If we did not - no sense to continue
+	panic(err)
+
+	// request, error := http.NewRequest("POST", auth_url, bytes.NewBuffer(auth_id))
+	// request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	// if error != nil {
+	// 	fmt.Println(error)
+	// }
+
+	// response, error := client.Do(request)
+
+	// if error != nil {
+	// 	// Try to authenticate via domain name, instead of domain id
+
+	// 	panic(error)
+	// }
+
+	// defer response.Body.Close()
 	// fmt.Println("response Status:", response.Status)
 	// fmt.Println("response Headers:", response.Header)
 	// body, _ := ioutil.ReadAll(response.Body)
 	// fmt.Println("response Body:", string(body))
-	responseBody, _ := io.ReadAll(response.Body)
-	Get_API_Endpoints(responseBody)
+	// responseBody, _ := io.ReadAll(response.Body)
+	// Get_API_Endpoints(responseBody)
 	// fmt.Println(endpoints)
 	// fmt.Printf("Format of responseBody is %T\n", responseBody)
 	// fmt.Printf("responseBody is %s\n", responseBody)
-	token = response.Header["X-Subject-Token"][0]
-	return response.Header["X-Subject-Token"][0]
+	// token = response.Header["X-Subject-Token"][0]
+	// return response.Header["X-Subject-Token"][0]
 }
 
 func Delete_security_rule(rule_id string) int {
