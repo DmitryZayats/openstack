@@ -111,7 +111,7 @@ func Get_token() string {
 
 		response, error := client.Do(request)
 		err = error
-		if err != nil {
+		if err != nil || response.StatusCode == 401 {
 			// If first attempt at auth with domain id failed, try with the domain name
 			// panic(error)
 			continue
